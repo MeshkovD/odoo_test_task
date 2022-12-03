@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_partner_form_film_inherit" model="ir.ui.view">
+            <field name="name">res.partner.form.film.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//page[@name='sales_purchases']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+
+                <xpath expr="//page[@name='sales_purchases']" position="after">
+                    <page name="tickets" string="Tickets" attrs="{'invisible': [('company_type', '!=', 'person')]}">
+
+                        <field name="ticket_ids" widget="one2many">
+                            <tree editable="bottom">
+                                <field name="partner_id" domain="[('is_cinema', '=', False)]"/>
+                                <field name="company_id" domain="[('is_cinema', '=', True)]"/>
+                                <field name="film_id"/>
+                            </tree>
+                        </field>
+
+                    </page>
+                </xpath>
+
+                <xpath expr="//span[@name='address_name']" position="before">
+                    <field name="is_cinema" string="Является кинотеатром" attrs="{'invisible': [('company_type', '=', 'person')]}"/>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+
+
+
+</odoo>
+
+
+

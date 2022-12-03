@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="menu_films_root"
+                  name="Films"
+                  sequence="0"/>
+
+        <menuitem id="menu_film_master"
+                  name="Film Menu"
+                  parent="menu_films_root"
+                  sequence="0"/>
+
+    </data>
+</odoo>

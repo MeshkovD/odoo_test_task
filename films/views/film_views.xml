@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_films_fmilm_form" model="ir.ui.view">
+        <field name="name">films.film.form</field>
+        <field name="model">films.film</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group
+                                style="border: 1px solid black;
+                                    padding: 10px 10px">
+                            <field
+                                    name="search_field"
+                                    truncate="False"
+                                    string="Поиск"
+                                    placeholder="Введите название фильма"/>
+                            <field name="errors" invisible="1"/>
+                            <field name="errors_message"
+                                   readonly="1"
+                                   attrs="{'invisible': [('errors', '=', False)]}"
+                                   string="Ошибка"/>
+                        </group>
+
+                        <group style="padding-left: 0">
+                            <field name="small_poster" string="" widget='image'/>
+                            <field name="big_poster" invisible="1"/>
+                            <field name="small_poster" invisible="1"/>
+                        </group>
+                        <group>
+                            <div>TODO: Вывести список фильмов</div>
+                        </group>
+                        <group>
+                            <field name="name" string="Название фильма"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_films_film_tree" model="ir.ui.view">
+        <field name="name">films.film.tree</field>
+        <field name="model">films.film</field>
+        <field name="arch" type="xml">
+            <tree>
+
+                <field name="name"/>
+                <field name="create_date"/>
+
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_films_film" model="ir.actions.act_window">
+        <field name="name">Film</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">films.film</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                Creat first film!
+            </p>
+        </field>
+    </record>
+
+
+    <menuitem id="menu_film"
+              name="Films"
+              action="action_films_film"
+              parent="menu_film_master"
+              sequence="0"/>
+
+
+</odoo>
