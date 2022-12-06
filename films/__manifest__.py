@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 {
     'name': 'Films',
     'author': 'D.I.',
@@ -18,3 +17,4 @@
     ],
     'application': True,
 }
+

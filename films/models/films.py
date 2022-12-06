@@ -3,7 +3,17 @@ import base64
 
 import requests
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
+
+
+class TempFilm(models.Model):
+    _name = 'films.temp_film'
+
+    name = fields.Char(string="Film name", required=True, unique=True, help="Название фильма")
+    small_poster = fields.Image("Film poster small")
+    film_id = fields.One2many('films.film', 'temp_film_id', string='Фильм')
+
 
 
 class Film(models.Model):
@@ -12,12 +22,9 @@ class Film(models.Model):
     _order = 'create_date'
 
     search_field = fields.Char()
-    name = fields.Char(string="Film name", required=True, unique=True, help="Название фильма")
-    big_poster = fields.Image("Film poster big")
+    name = fields.Char(string="Film name", unique=True, help="Название фильма")
     small_poster = fields.Image("Film poster small")
-    errors_message = fields.Char('Ошибка')
-    errors = fields.Boolean(default=False)
-
+    temp_film_id = fields.Many2one('films.temp_film')
 
     def _get_film_data(self):
         url = f'https://kinobd.ru/api/films/search/title?q={self.search_field}'
@@ -26,34 +33,37 @@ class Film(models.Model):
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         response_data = response.json()['data']
-        if response.status_code == 200 and response_data:
-            data = {
-                'name': response_data[0]['name_russian'],
-                'big_poster': response_data[0]['big_poster'],
-                'small_poster': response_data[0]['small_poster'],
-            }
-        else:
-            data = {
-                'errors': True
-            }
-        return data
-
+        if not response_data:
+            raise ValidationError(f'Информация по запросу {self.search_field} не найдена')
+        elif response.status_code != 200:
+            raise ValidationError(f'Ошибка запроса({response.status_code})')
+        return response_data
 
     def load_image_from_url(self, url):
-        data = base64.b64encode(requests.get(url.strip()).content).replace(b'\n', b'')
+        data = None
+        if url:
+            data = base64.b64encode(requests.get(url.strip()).content).replace(b'\n', b'')
         return data
 
-    @api.onchange('search_field')
-    def onchange_search_field(self):
+    @api.onchange('temp_film_id')
+    def onchange_temp_film_id(self):
         if self.search_field:
-            result = self._get_film_data()
-            if 'errors' in result:
-                self.errors = True
-                self.errors_message = 'Ошибка запроса'
-            else:
-                self.errors = False
-                self.name = result.get('name')
-                self.big_poster = self.load_image_from_url(result.get('big_poster'))
-                self.small_poster = self.load_image_from_url(result.get('small_poster'))
-                self.search_field = None
+            self.name = self.temp_film_id.name
+            self.small_poster = self.temp_film_id.small_poster
+
+
+    def search_button(self):
+        if self.search_field:
+
+            temp_films = self.env['films.temp_film'].search([])
+            temp_films.unlink()
+
+            films_data = self._get_film_data()
+            _list = []
+
+            for film in films_data:
+                self.env['films.temp_film'].create({
+                    'name': film.get('name_russian', 'Имя не указано'),
+                    'small_poster': self.load_image_from_url(film.get('small_poster', None)),
+                    'film_id': [self.id]})
 

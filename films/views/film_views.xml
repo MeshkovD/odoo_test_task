@@ -8,28 +8,25 @@
             <form>
                 <sheet>
                     <group>
-                        <group
-                                style="border: 1px solid black;
-                                    padding: 10px 10px">
-                            <field
-                                    name="search_field"
-                                    truncate="False"
-                                    string="Поиск"
-                                    placeholder="Введите название фильма"/>
-                            <field name="errors" invisible="1"/>
-                            <field name="errors_message"
-                                   readonly="1"
-                                   attrs="{'invisible': [('errors', '=', False)]}"
-                                   string="Ошибка"/>
+                        <group style="border: 1px solid black; padding: 10px 10px">
+
+                            <field name="search_field"
+                                   truncate="False"
+                                   string="Поиск"
+                                   placeholder="Введите название фильма"/>
+
+                            <button type="object"
+                                    class="btn btn-primary"
+                                    name="search_button"
+                                    string="Найти"/>
                         </group>
 
                         <group style="padding-left: 0">
                             <field name="small_poster" string="" widget='image'/>
-                            <field name="big_poster" invisible="1"/>
                             <field name="small_poster" invisible="1"/>
                         </group>
                         <group>
-                            <div>TODO: Вывести список фильмов</div>
+                            <field name="temp_film_id" string="Выберите фильм:" attrs="{'invisible': [('search_field', '=', False)]}"/>
                         </group>
                         <group>
                             <field name="name" string="Название фильма"/>
